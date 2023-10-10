@@ -86,9 +86,10 @@ def roomer(r):
                 r.send("/fish")
             else:
                 with open("optout.txt") as f:
-                    if result.group(1) not in f.read().split('\n'):
+                    if result.group(1) not in f.read().split("\n"):
                         r.send(
-                            f"@{result.group(1).replace(' ', '')} your fish is ready!")
+                            f"@{result.group(1).replace(' ', '')} your fish is ready!"
+                        )
         elif event.content[:5] == "echo ":
             if event.user_id == 540406 or event.content[5:10] != "/fish":
                 r.send(html.unescape(event.content[5:]))
