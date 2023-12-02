@@ -1,4 +1,5 @@
 import html
+import os
 import re
 import secrets
 import subprocess
@@ -16,6 +17,17 @@ from transformers import Conversation, pipeline
 c = Conversation()
 h = pipeline("conversational", pad_token_id=0)
 last_msg = ""
+
+commit_commands = """
+git config --global user.email ""
+git config --global user.name "GitHub Actions"
+git config --global pull.rebase true
+git add .
+git commit -m "Database opting change"
+git pull "https://github.com/PlaceReporter99/utility-bot.git" main
+git rebase --skip
+git push HEAD:main
+"""
 
 main_ = __name__ == "__main__"
 
@@ -308,6 +320,19 @@ def roomer(r):
             r.send("/fish inv")
         elif event.content[:3] == "ai ":
             r.send(r.buildReply(event.message_id, ai(event.content[3:])))
+        elif event.content == "togglefishping":
+            with open("optout.txt", "r+") as f:
+                li = f.read().split("\n")
+                if event.user_name in li:
+                    li.remove(event.user_name)
+                    message = "Opted into fishing pings."
+                else:
+                    li.append(event.user_name)
+                    message = "Opted out of fishing pings."
+                f.seek(0)
+                f.write("\n".join(li))
+                os.system(commit_commands)
+                r.send(r.buildReply(event.message_id, message))
 
     return msg
 
